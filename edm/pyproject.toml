@@ -7,5 +7,14 @@ requires-python = ">=3.10"
 dependencies = [
   "numpy",
   "pytest",
+  "pytest-xdist",
+  "pytest-benchmark",
   "hypothesis"
+]
+
+
+[tool.pytest.ini_options]
+
+addopts = [
+  "-n8"
 ]
