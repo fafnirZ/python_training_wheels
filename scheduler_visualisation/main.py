@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+import plotly.figure_factory as ff
 
 
 @dataclass
@@ -21,6 +22,30 @@ class Worker:
         _task = (curr_time, curr_time + task)
         self.curr_task = _task
         self.task_log.append(_task)
+
+
+
+class ColouredBlock:
+    content = '█'
+
+    @staticmethod
+    def display(colour):
+        CLEAR = "\033[0m"  # Corrected CLEAR code
+        C_ = ""  # Initialize C_
+        if colour == "blue":
+            C_ = "\033[34m"  # Corrected blue code
+        elif colour == "red": #added red example
+            C_ = "\033[31m"
+        elif colour == "green": #added green example
+            C_ = "\033[32m"
+        elif colour == "bright_blue":
+            C_ = "\033[94m" #bright blue example
+        elif colour == "yellow":
+            C_ = "\033[33m"
+
+        print(f"{C_}{ColouredBlock.content}{CLEAR}", end="")
+
+
 
 
 def main():
@@ -50,15 +75,19 @@ def main():
                     break
         t+=1
     
-
-    
-    #
-    for w in workers:
-        print(w.task_log)
-
-    
-
-
+    task_colours = {
+        1: "blue",
+        2: "green",
+        3: "red"
+    }
+    for worker in workers:
+        print(f"Worker: {worker.id}  ",end="")
+        for record in worker.task_log:
+            task_id = record[1]-record[0]
+            task_colour = task_colours[task_id]
+            for _ in range(task_id):
+                ColouredBlock.display(task_colour)
+        print("")
 
 if __name__ == "__main__":
     main()
