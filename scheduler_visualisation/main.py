@@ -92,7 +92,7 @@ def main():
         tasks.append(2)
         tasks.append(3)
 
-    n_workers = 3
+    n_workers = 32
     # main loop
 
     workers = [
@@ -122,21 +122,16 @@ def main():
             if end_time > LONGEST_TASK_TIME:
                 LONGEST_TASK_TIME = end_time
 
-    print(LONGEST_TASK_TIME)
     
     for worker in workers:
-        print(f"Worker: {worker.id}  ",end="")
+        print(f"Worker: {worker.id:03}  ",end="")
         task_log = worker.task_log.copy()
         t = 0
         curr_task = None
         while t <= LONGEST_TASK_TIME:
-            if len(task_log) == 0:
-                ColouredBlock.display("clear") # show inefficiency
-                t+=1
-                continue
             if curr_task is None:
                 curr_task = task_log.pop(0)
-            if t >= curr_task[1]:
+            if t >= curr_task[1] and len(task_log) > 0:
                 curr_task = task_log.pop(0)
             task_id = curr_task[2]
             task_colour = task_colours[task_id]
@@ -147,6 +142,9 @@ def main():
 
             t+=1
         print("")
+
+    
+    print(f"TOTAL TIME TAKEN: {LONGEST_TASK_TIME}s")
 
 if __name__ == "__main__":
     main()
