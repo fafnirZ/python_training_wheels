@@ -1,6 +1,29 @@
 """
 The hypothesis of this implementation is that
 it takes less time than the explicit batched process
+
+each of the threads in the threadpool will 
+continuously look for the next job to perform its operation on
+this is automatically handled by the threadpool
+
+the only downside to this is that if you try to
+create N requests at once its a huge overhead.
+so you should still batch it but you should probably make the batch
+fairly big i.e. DEFINITELY than the number of workers. 
+
+
+this is the same as scheduler_visualisation.strategy_1_perfect_scheduling
+whereas the other batched.py implementation is more inline with scheduler_visualisation.strategy_2_bottlenecked_by_slowest
+
+
+implementation3 ---- TODO
+workers pull from queue follows a different pattern.
+here we manage jobs and submitting jobs to pre-managed threads where scheduling is automatically
+handled by the concurrent.futures library.
+
+in workers_pull_from_queue we will be creating the threads and managing the scheduling ourselves
+by making the threads run on separate event loops and have them interact with a queue (queue should also be in another thread)
+we need to ensure nothing is bottlenecked... not sure yet
 """
 
 import concurrent.futures
