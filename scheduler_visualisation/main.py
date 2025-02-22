@@ -43,6 +43,9 @@ class ColouredBlock:
         elif colour == "yellow":
             C_ = "\033[33m"
 
+        elif colour == "clear":
+            C_ = CLEAR
+
         print(f"{C_}{ColouredBlock.content}{CLEAR}", end="")
 
 
@@ -55,8 +58,9 @@ def main():
         tasks.append(1)
         tasks.append(2)
         tasks.append(3)
+        tasks.append(4)
 
-    n_workers = 3
+    n_workers = 32
     # main loop
 
     workers = [
@@ -78,7 +82,8 @@ def main():
     task_colours = {
         1: "blue",
         2: "green",
-        3: "red"
+        3: "red",
+        4: "yellow",
     }
     for worker in workers:
         print(f"Worker: {worker.id}  ",end="")
