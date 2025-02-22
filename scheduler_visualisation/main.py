@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-import plotly.figure_factory as ff
 
 
 @dataclass
@@ -18,12 +17,50 @@ class Worker:
         return True
     
 
-    def assign_task(self, curr_time: int, task: int):
-        _task = (curr_time, curr_time + task)
+    def assign_task(self, *, curr_time: int, task: int, task_id: int|None):
+        _task = (curr_time, curr_time + task, task_id)
         self.curr_task = _task
         self.task_log.append(_task)
 
 
+
+
+
+def strategy_1_perfect_scheduling(tasks: list, workers:list):
+    t = 0
+    while tasks:
+        for worker in workers:
+            if worker.is_free(t):
+                try:
+                    _tsk = tasks.pop()
+                    worker.assign_task(curr_time=t, task=_tsk, task_id=_tsk)
+                except IndexError:
+                    break
+        t+=1
+
+
+def strategy_2_bottlenecked_by_slowest(tasks: list, workers: list):
+    t = 0
+    def is_all_workers_in_batch_complete(workers, curr_time):
+        for worker in workers:
+            if not worker.is_free(curr_time):
+                return False
+        return True
+    while tasks:
+        if is_all_workers_in_batch_complete(workers, t):
+            for worker in workers:
+                if worker.is_free(t):
+                    try:
+                        _tsk = tasks.pop()
+                        worker.assign_task(curr_time=t, task=_tsk, task_id=_tsk)
+                    except IndexError:
+                        break
+        else:
+            for worker in workers:
+                if not worker.is_free(t):
+                    worker.assign_task(curr_time=t, task=1, task_id=None)
+                
+        t+=1
 
 class ColouredBlock:
     content = '█'
@@ -68,29 +105,25 @@ def main():
         for i in range(n_workers)
     ]
 
-    t = 0
-    while tasks:
-        for worker in workers:
-            if worker.is_free(t):
-                try:
-                    _tsk = tasks.pop()
-                    worker.assign_task(t, _tsk)
-                except IndexError:
-                    break
-        t+=1
-    
+    #
+    # strategy_1_perfect_scheduling(tasks, workers)
+    strategy_2_bottlenecked_by_slowest(tasks, workers)
+
+
     task_colours = {
         1: "blue",
         2: "green",
         3: "red",
         4: "yellow",
+        None: "clear",
     }
     for worker in workers:
         print(f"Worker: {worker.id}  ",end="")
         for record in worker.task_log:
-            task_id = record[1]-record[0]
+            task_id = record[2]
             task_colour = task_colours[task_id]
-            for _ in range(task_id):
+            task_duration = record[1]-record[0]
+            for _ in range(task_duration):
                 ColouredBlock.display(task_colour)
         print("")
 
