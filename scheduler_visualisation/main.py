@@ -55,10 +55,10 @@ def strategy_2_bottlenecked_by_slowest(tasks: list, workers: list):
                         worker.assign_task(curr_time=t, task=_tsk, task_id=_tsk)
                     except IndexError:
                         break
-        else:
-            for worker in workers:
-                if not worker.is_free(t):
-                    worker.assign_task(curr_time=t, task=1, task_id=None)
+        # else:
+        #     for worker in workers:
+        #         if not worker.is_free(t):
+        #             # worker.assign_task(curr_time=t, task=1, task_id=None)
                 
         t+=1
 
@@ -81,7 +81,7 @@ class ColouredBlock:
             C_ = "\033[33m"
 
         elif colour == "clear":
-            C_ = CLEAR
+            C_ = "\033[97m" # Bright white
 
         print(f"{C_}{ColouredBlock.content}{CLEAR}", end="")
 
@@ -95,9 +95,8 @@ def main():
         tasks.append(1)
         tasks.append(2)
         tasks.append(3)
-        tasks.append(4)
 
-    n_workers = 32
+    n_workers = 3
     # main loop
 
     workers = [
@@ -109,7 +108,9 @@ def main():
     # strategy_1_perfect_scheduling(tasks, workers)
     strategy_2_bottlenecked_by_slowest(tasks, workers)
 
-
+    ######################
+    # printing mechanism #
+    ######################
     task_colours = {
         1: "blue",
         2: "green",
@@ -117,14 +118,45 @@ def main():
         4: "yellow",
         None: "clear",
     }
+
+    LONGEST_TASK_TIME = -999
+    for worker in workers:
+        for record in worker.task_log:
+            end_time = record[1]
+            if end_time > LONGEST_TASK_TIME:
+                LONGEST_TASK_TIME = end_time
+
+    print(LONGEST_TASK_TIME)
+    
     for worker in workers:
         print(f"Worker: {worker.id}  ",end="")
-        for record in worker.task_log:
-            task_id = record[2]
+        # for record in worker.task_log:
+        #     task_id = record[2]
+        #     task_colour = task_colours[task_id]
+        #     task_duration = record[1]-record[0]
+        #     for _ in range(task_duration):
+        #         ColouredBlock.display(task_colour)
+
+        task_log = worker.task_log.copy()
+        t = 0
+        curr_task = None
+        while t <= LONGEST_TASK_TIME:
+            if len(task_log) == 0:
+                ColouredBlock.display("clear") # show inefficiency
+                t+=1
+                continue
+            if curr_task is None:
+                curr_task = task_log.pop(0)
+            if t >= curr_task[1]:
+                curr_task = task_log.pop(0)
+            task_id = curr_task[2]
             task_colour = task_colours[task_id]
-            task_duration = record[1]-record[0]
-            for _ in range(task_duration):
+            if curr_task[0] <= t <= curr_task[1]:
                 ColouredBlock.display(task_colour)
+            else:
+                ColouredBlock.display("clear") # show inefficiency
+
+            t+=1
         print("")
 
 if __name__ == "__main__":
