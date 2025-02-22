@@ -86,6 +86,7 @@ class ColouredBlock:
 
 def main():
 
+    # create tasks
     tasks = []
     for _ in range(100):
         tasks.append(1)
@@ -93,8 +94,11 @@ def main():
         tasks.append(3)
 
     n_workers = 32
-    # main loop
 
+
+    #
+    # main functionality
+    #
     workers = [
         Worker(id=i)
         for i in range(n_workers)
