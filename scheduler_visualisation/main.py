@@ -55,10 +55,6 @@ def strategy_2_bottlenecked_by_slowest(tasks: list, workers: list):
                         worker.assign_task(curr_time=t, task=_tsk, task_id=_tsk)
                     except IndexError:
                         break
-        # else:
-        #     for worker in workers:
-        #         if not worker.is_free(t):
-        #             # worker.assign_task(curr_time=t, task=1, task_id=None)
                 
         t+=1
 
@@ -130,13 +126,6 @@ def main():
     
     for worker in workers:
         print(f"Worker: {worker.id}  ",end="")
-        # for record in worker.task_log:
-        #     task_id = record[2]
-        #     task_colour = task_colours[task_id]
-        #     task_duration = record[1]-record[0]
-        #     for _ in range(task_duration):
-        #         ColouredBlock.display(task_colour)
-
         task_log = worker.task_log.copy()
         t = 0
         curr_task = None
